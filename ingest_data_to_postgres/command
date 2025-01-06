@@ -1,3 +1,5 @@
+ny_taxi_postgres_data 
+
 docker run -it \
     -e POSTGRES_USER="root" \
     -e POSTGRES_PASSWORD="root" \
@@ -12,6 +14,8 @@ pip install pgcli
 pgcli -h localhost -p 5432 -u root -d ny_taxi
 
 root
+
+pip install jupyter
 
 https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
 
