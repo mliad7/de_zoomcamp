@@ -29,7 +29,7 @@ def main(params):
     data.tpep_dropoff_datetime = pd.to_datetime(data.tpep_dropoff_datetime)
 
     
-    data.to_sql(name='table_name', con=engine, if_exists='replace')
+    data.to_sql(name=table_name, con=engine, if_exists='replace')
 
 
 if __name__ == '__main__':
