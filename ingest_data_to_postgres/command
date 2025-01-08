@@ -103,3 +103,10 @@ docker run -it \
         --db=ny_taxi \
         --table_name=yellow_taxi_data \
         --url=${URL}
+
+
+# docker compose creation
+
+docker-compose up
+
+go to localhost8080 pgadmin
