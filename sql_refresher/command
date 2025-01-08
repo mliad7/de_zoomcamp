@@ -1,0 +1,34 @@
+# folder creation
+mkdir ny_taxi_postgres_data 
+
+# docker compose creation
+
+docker-compose up
+
+docker build -t taxi_ingest:v001 .
+
+URL="https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv"
+URL2="https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet"
+
+docker run -it \
+    --network=sql_refresher_default \
+    taxi_ingest:v001 \
+        --user=root \
+        --password=root \
+        --host=pgdatabase \
+        --port=5432 \
+        --db=ny_taxi \
+        --table_name=zones \
+        --table_name2=yellow_taxi_data \
+        --url=${URL} \
+        --url2=${URL2}
+
+go to localhost8080 pgadmin
+
+login using email and password
+create server
+name - docker localhost
+hostname - pgdatabase
+port - 5432
+user -root
+passwd - root
