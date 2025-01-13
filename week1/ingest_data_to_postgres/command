@@ -1,0 +1,114 @@
+# folder creation
+ny_taxi_postgres_data 
+
+docker run -it \
+    -e POSTGRES_USER="root" \
+    -e POSTGRES_PASSWORD="root" \
+    -e POSTGRES_DB="ny_taxi" \
+    -v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    postgres:13
+
+# new bash
+pip install jupyter
+
+jupyter notebook
+
+# data source
+https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page
+
+# new bash
+pip install pgcli
+
+pgcli -h localhost -p 5432 -u root -d ny_taxi
+
+# pgcli
+root
+
+SELECT COUNT(1) FROM yellow_taxi_data
+
+SELECT MAX(tpep_pickup_datetime), MIN(tpep_pickup_datetime), MAX(total_amount) FROM yellow_taxi_data
+
+# pgAdmin
+
+# docker pull dpage/pgadmin4
+
+docker run -it \
+    -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+    -e PGADMIN_DEFAULT_PASSWORD="root" \
+    -p 8080:80 \
+    dpage/pgadmin4
+
+# link 2 containers using networks 
+
+stop all the containers
+
+docker network create pg-network
+
+
+docker run -it \
+    -e POSTGRES_USER="root" \
+    -e POSTGRES_PASSWORD="root" \
+    -e POSTGRES_DB="ny_taxi" \
+    -v $(pwd)/ny_taxi_postgres_data:/var/lib/postgresql/data \
+    -p 5432:5432 \
+    --network=pg-network \
+    --name pg-database \
+    postgres:13
+
+# run in another bash
+docker run -it \
+    -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+    -e PGADMIN_DEFAULT_PASSWORD="root" \
+    -p 8080:80 \
+    --network=pg-network \
+    --name pgadmin \
+    dpage/pgadmin4
+
+go to browser - localhost:8080/browser/
+login using email and password
+create server
+name - docker localhost
+hostname - pg-database
+port - 5432
+user -root
+passwd - root
+
+
+# docker file creation
+
+jupyter nbconvert --to=script upload_data.ipynb # convert nb to script
+
+URL="https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet"
+
+python ingest_data.py \
+    --user=root \
+    --password=root \
+    --host=localhost \
+    --port=5432 \
+    --db=ny_taxi \
+    --table_name=yellow_taxi_data \
+    --url=${URL}
+
+
+docker build -t taxi_ingest:v001 .
+
+URL="https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2021-01.parquet"
+
+docker run -it \
+    --network=pg-network \
+    taxi_ingest:v001 \
+        --user=root \
+        --password=root \
+        --host=pg-database \
+        --port=5432 \
+        --db=ny_taxi \
+        --table_name=yellow_taxi_data \
+        --url=${URL}
+
+
+# docker compose creation
+
+docker-compose up
+
+go to localhost8080 pgadmin

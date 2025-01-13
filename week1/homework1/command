@@ -1,0 +1,41 @@
+# folder creation
+mkdir ny_taxi_postgres_data 
+
+wget https://github.com/DataTalksClub/nyc-tlc-data/releases/download/green/green_tripdata_2019-10.csv.gz
+
+gzip -d green_tripdata_2019-10.csv.gz
+
+# docker compose creation
+
+docker build -t homework1 .
+
+docker-compose up
+
+URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/green/green_tripdata_2019-10.csv.gz"
+URL2="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/misc/taxi_zone_lookup.csv"
+
+docker run -it \
+    --network=homework1_default \
+    homework1 \
+        --user=root \
+        --password=root \
+        --host=pgdatabase \
+        --port=5432 \
+        --db=ny_taxi \
+        --table_name=yellow_taxi_data \
+        --table_name2=zones \
+        --url=${URL} \
+        --url2=${URL2}
+
+go to localhost8080 pgadmin
+
+login using email and password
+create server
+name - docker localhost
+hostname - pgdatabase
+port - 5432
+user -root
+passwd - root
+
+
+ cp -r data-engineering-zoomcamp/01-docker-terraform/1_terraform_gcp/terraform de_zoomcamp/week1/homework1/tf
